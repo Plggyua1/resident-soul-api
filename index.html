@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Resident Vision</title>
+    <title>Resident Soul View</title>
     <style>
-        body { background: #111; color: #0f0; font-family: monospace; text-align: center; }
-        img { width: 80%; border: 2px solid #0f0; margin-top: 20px; }
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        #view { max-width: 90%; max-height: 80vh; border: 3px solid #0f0; box-shadow: 0 0 20px #0f0; background: #222; }
+        .status { margin-top: 10px; font-size: 1.2rem; }
     </style>
 </head>
 <body>
-    <h1>LIVE: RESIDENT_PLAYER POV</h1>
-    <img id="view" src="" onerror="this.style.display='none'">
+    <h2>LIVE FEED: RESIDENT_BODY</h2>
+    <img id="view" src="" alt="Waiting for signal...">
+    <div class="status">SIGNAL: <span id="signal">CONNECTING...</span></div>
+
     <script>
-        setInterval(async () => {
-            const res = await fetch('/api/upload');
-            const data = await res.json();
-            if (data.image) {
-                document.getElementById('view').src = data.image;
-                document.getElementById('view').style.display = 'inline';
+        const view = document.getElementById('view');
+        const signal = document.getElementById('signal');
+
+        async function updateVision() {
+            try {
+                const res = await fetch('/api/upload');
+                const data = await res.json();
+                if (data.image) {
+                    // Update the image source with the Base64 string
+                    view.src = data.image;
+                    signal.innerText = "ONLINE";
+                    signal.style.color = "#0f0";
+                }
+            } catch (e) {
+                signal.innerText = "LOST";
+                signal.style.color = "#f00";
             }
-        }, 1000); // Refresh every second
+        }
+
+        setInterval(updateVision, 1000); // Refresh every second
     </script>
 </body>
 </html>
